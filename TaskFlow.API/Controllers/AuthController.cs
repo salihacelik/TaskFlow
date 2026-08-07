@@ -40,7 +40,30 @@ namespace TaskFlow.API.Controllers
 
             return Ok(new { message = "Kayıt işlemi başarılı! Sisteme giriş yapabilirsiniz." });
         }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginDto request)
+        {
+            // 1. Kullanıcıyı veritabanında e-posta adresine göre bul
+            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+
+            // 2. Kullanıcı yoksa veya şifre eşleşmiyorsa hata döndür
+            // Not: Gerçek projelerde şifreler her zaman hashlenerek (şifrelenerek) kontrol edilir, şimdilik temel mantığı kuruyoruz.
+            if (user == null || user.PasswordHash != request.Password)
+            {
+                return Unauthorized("Geçersiz e-posta veya şifre.");
+            }
+
+            // 3. İleride eklenecek olan JWT Token (Dijital Anahtar) Üretim Alanı
+            // Kullanıcının rolü burada token'a işlenecek.
+                
+            return Ok(new { Message = "Giriş başarılı!", Role = user.Role });
+        }
     }
 
-    
+    public class LoginDto
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
 }
