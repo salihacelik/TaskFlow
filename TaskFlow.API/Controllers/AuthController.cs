@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using TaskFlow.API.Data;
-using TaskFlow.API.Models;
-using TaskFlow.API.DTOs;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using TaskFlow.API.Data;
+using TaskFlow.API.DTOs;
+using TaskFlow.API.Models;
 
 namespace TaskFlow.API.Controllers
 {
@@ -11,6 +16,8 @@ namespace TaskFlow.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly TaskFlowDbContext _context;
+        // Not: Gerçek projelerde bu anahtar appsettings.json'dan alınır.
+        private readonly string _jwtKey = "SuperSecretKey12345678901234567890"; 
 
         public AuthController(TaskFlowDbContext context)
         {
@@ -20,18 +27,16 @@ namespace TaskFlow.API.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDto request)
         {
-            // 1. Email sistemde var mı kontrolü
             if (_context.Users.Any(u => u.Email == request.Email))
             {
                 return BadRequest("Bu email adresi zaten kullanılıyor.");
             }
 
-            // 2. Yeni kullanıcıyı oluştur ve veritabanına ekle
             var newUser = new User
             {
                 Username = request.Username,
                 Email = request.Email,
-                PasswordHash = request.Password, // İlerleyen adımlarda güvenlik için bu şifreyi Hash'leyeceğiz.
+                PasswordHash = request.Password, 
                 Role = request.Role
             };
 
@@ -44,20 +49,31 @@ namespace TaskFlow.API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto request)
         {
-            // 1. Kullanıcıyı veritabanında e-posta adresine göre bul
             var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
 
-            // 2. Kullanıcı yoksa veya şifre eşleşmiyorsa hata döndür
-            // Not: Gerçek projelerde şifreler her zaman hashlenerek (şifrelenerek) kontrol edilir, şimdilik temel mantığı kuruyoruz.
             if (user == null || user.PasswordHash != request.Password)
             {
                 return Unauthorized("Geçersiz e-posta veya şifre.");
             }
 
-            // 3. İleride eklenecek olan JWT Token (Dijital Anahtar) Üretim Alanı
-            // Kullanıcının rolü burada token'a işlenecek.
-                
-            return Ok(new { Message = "Giriş başarılı!", Role = user.Role });
+            // JWT Token (Dijital Anahtar) Üretimi ve Yetkiye Göre Yönlendirme Altyapısı
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role) // Manager, Developer veya Tester rolü[cite: 1]
+                }),
+                Expires = DateTime.UtcNow.AddHours(2),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return Ok(new { Token = tokenString, Role = user.Role, Message = "Giriş başarılı!" });
         }
     }
 
@@ -65,5 +81,13 @@ namespace TaskFlow.API.Controllers
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+    }
+    
+    public class RegisterDto 
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 }
