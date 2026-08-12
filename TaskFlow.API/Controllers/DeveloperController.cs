@@ -122,13 +122,13 @@ namespace TaskFlow.API.Controllers
 public class UpdateTaskStatusDto
 {
     public int TaskId { get; set; }
-    public string? NewStatus { get; set; } // Soru işareti eklendi
+    public string? NewStatus { get; set; } 
 }
 
 public class AddCommentDto
 {
     public int TaskId { get; set; }
-    public string? CommentText { get; set; } // Soru işareti eklendi
+    public string? CommentText { get; set; } 
 }
     }
 }

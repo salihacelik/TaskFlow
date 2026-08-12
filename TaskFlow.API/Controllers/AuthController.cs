@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration; // appsettings'i okumak için gerekli
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using TaskFlow.API.Data;
-using TaskFlow.API.DTOs;
+// using TaskFlow.API.DTOs; // Kendi dosyanda DTO'ları aşağıya eklediğin için bunu yoruma aldım, çakışma yapmasın
 using TaskFlow.API.Models;
 
 namespace TaskFlow.API.Controllers
@@ -16,12 +17,12 @@ namespace TaskFlow.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly TaskFlowDbContext _context;
-        // Not: Gerçek projelerde bu anahtar appsettings.json'dan alınır.
-        private readonly string _jwtKey = "SuperSecretKey12345678901234567890"; 
+        private readonly IConfiguration _configuration; // appsettings bağlantısı eklendi
 
-        public AuthController(TaskFlowDbContext context)
+        public AuthController(TaskFlowDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -58,18 +59,24 @@ namespace TaskFlow.API.Controllers
 
             // JWT Token (Dijital Anahtar) Üretimi ve Yetkiye Göre Yönlendirme Altyapısı
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtKey);
+            
+            // Anahtarı artık sabit kısımdan DEĞİL, doğrudan appsettings.json'dan alıyoruz!
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
+            
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, user.Role) // Manager, Developer veya Tester rolü[cite: 1]
+                    new Claim(ClaimTypes.Role, user.Role) // Manager, Developer veya Tester rolü
                 }),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddDays(30), // Rahat çalışman için ömrünü 30 gün yaptık
+                Issuer = _configuration["Jwt:Issuer"],     // appsettings'ten okundu
+                Audience = _configuration["Jwt:Audience"], // appsettings'ten okundu
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+            
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 

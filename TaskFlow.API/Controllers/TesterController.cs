@@ -1,39 +1,113 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using TaskFlow.API.Data;
+using TaskFlow.API.Models;
 
 namespace TaskFlow.API.Controllers
 {
-  [Authorize(Roles = "Tester")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Tester")] // Sadece Tester rolüne sahip olanlar girebilir
     public class TesterController : ControllerBase
     {
+        private readonly TaskFlowDbContext _context;
+
+        public TesterController(TaskFlowDbContext context)
+        {
+            _context = context;
+        }
+
+        // 1. TESTE HAZIR GÖREVLERİ GÖRÜNTÜLE
         [HttpGet("ready-for-test")]
-        public IActionResult GetTasksReadyForTest()
+        public async Task<IActionResult> GetReadyForTestTasks()
         {
-            // Teste Hazır Görevler: Test için hazır görevleri görüntüler[cite: 1]
-            return Ok("Teste hazır görevler listelendi.");
+            var readyTasks = await _context.Tasks
+                .Where(t => t.Status == "READY FOR TEST")
+                .ToListAsync();
+
+            if (!readyTasks.Any())
+            {
+                return NotFound("Şu an test edilmeyi bekleyen bir görev bulunmuyor.");
+            }
+
+            return Ok(readyTasks);
         }
 
-        [HttpPost("approve-task")]
-        public IActionResult ApproveTask()
+        // 2. BAŞARILIYSA ONAYLA, DEĞİLSE BUG'A DÜŞÜR VE YORUM EKLE
+        [HttpPut("evaluate-task")]
+        public async Task<IActionResult> EvaluateTask([FromBody] EvaluateTaskDto dto)
         {
-            // Başarılıysa Onay (COMPLETED statüsü)[cite: 1]
-            return Ok("Görev testten geçti ve onaylandı.");
+            var task = await _context.Tasks.FindAsync(dto.TaskId);
+            if (task == null) return NotFound("Görev bulunamadı.");
+
+            // Sistemdeki tester'ın kimliğini JWT Token üzerinden alıp int'e çeviriyoruz
+            var testerIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int parsedTesterId = int.Parse(testerIdString ?? "0");
+
+            // Görev Yaşam Döngüsü kurallarını işletiyoruz
+            if (dto.IsSuccessful)
+            {
+                task.Status = "COMPLETED"; // Test başarılıysa onaylandı statüsüne geçer
+            }
+            else
+            {
+                task.Status = "BUG OLUŞTURULDU"; // Test başarısızsa Developer'a geri döner
+            }
+
+            // Değerlendirme sırasında bir açıklama/yorum yazıldıysa veritabanına kaydet
+            if (!string.IsNullOrEmpty(dto.CommentText))
+            {
+                var comment = new Comment 
+                {
+                    TaskId = dto.TaskId,
+                    UserId = parsedTesterId,
+                    CommentText = dto.CommentText // Comment.cs ile birebir uyumlu
+                };
+                _context.Comments.Add(comment);
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok($"Görev değerlendirmesi tamamlandı. Yeni Durum: {task.Status}");
         }
 
-        [HttpPost("report-bug")]
-        public IActionResult ReportBug()
-        {
-            // Değilse BUG'A DÜŞÜR, Yorum Ekle, Developer'a Gönder[cite: 1]
-            return Ok("Bug oluşturuldu ve görev Developer'a geri gönderildi.");
-        }
-        
+        // 3. SADECE YORUM EKLE
         [HttpPost("add-comment")]
-        public IActionResult AddComment()
+        public async Task<IActionResult> AddComment([FromBody] TesterCommentDto dto)
         {
-            // Yorum Ekle: Göreve yorum yapabilir[cite: 1]
-            return Ok("Teste dair yorum eklendi.");
+            // Sistemdeki tester'ın kimliğini JWT Token üzerinden alıp int'e çeviriyoruz
+            var testerIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int parsedTesterId = int.Parse(testerIdString ?? "0");
+            
+            var comment = new Comment
+            {
+                TaskId = dto.TaskId,
+                UserId = parsedTesterId,
+                CommentText = dto.CommentText ?? "" // Comment.cs ile birebir uyumlu
+            };
+            
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
+            
+            return Ok("Yorum başarıyla eklendi.");
         }
+    }
+
+    // --- DTO SINIFLARI ---
+    
+    public class EvaluateTaskDto
+    {
+        public int TaskId { get; set; }
+        public bool IsSuccessful { get; set; } // true ise Onayla, false ise Bug'a düşür
+        public string? CommentText { get; set; } // Opsiyonel değerlendirme notu
+    }
+
+    public class TesterCommentDto
+    {
+        public int TaskId { get; set; }
+        public string? CommentText { get; set; }
     }
 }
