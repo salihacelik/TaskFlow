@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 using TaskFlow.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,9 +13,50 @@ builder.Services.AddDbContext<TaskFlowDbContext>(options =>
 
 builder.Services.AddControllers();
 
-// SWAGGER (GÖRSEL ARAYÜZ) SERVİSLERİ 
+// JWT KİMLİK DOĞRULAMA SERVİSİ (YENİ EKLENEN KISIM)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "TaskFlowIssuer",
+            ValidAudience = builder.Configuration["Jwt:Audience"] ?? "TaskFlowAudience",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "super_secret_taskflow_key_123456789"))
+        };
+    });
+
+// SWAGGER (GÖRSEL ARAYÜZ) SERVİSLERİ VE KİLİT BUTONU EKLENTİSİ (YENİ EKLENEN KISIM)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Token'ı buraya girin. Format: Bearer {token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 // 2. PROJENİN İNŞA EDİLMESİ
 var app = builder.Build(); 
@@ -25,7 +70,11 @@ if (app.Environment.IsDevelopment())
 
 // 3. MİDDLEWARE TANIMLAMALARI
 app.UseHttpsRedirection();
+
+// KİMLİK DOĞRULAMA MİDDLEWARE'İ (YENİ EKLENEN KISIM - Mutlaka UseAuthorization'dan önce olmalı)
+app.UseAuthentication(); 
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

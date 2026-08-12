@@ -155,3 +155,4 @@ C:\Users\hp\OneDrive\Masaüstü\TaskFlow\TaskFlow.API\obj\Debug\net9.0\ref\TaskF
 C:\Users\hp\OneDrive\Masaüstü\TaskFlow\TaskFlow.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\hp\OneDrive\Masaüstü\TaskFlow\TaskFlow.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\hp\OneDrive\Masaüstü\TaskFlow\TaskFlow.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\hp\OneDrive\Masaüstü\TaskFlow\TaskFlow.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
