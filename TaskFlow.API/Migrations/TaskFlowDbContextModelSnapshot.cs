@@ -41,6 +41,8 @@ namespace TaskFlow.API.Migrations
 
                     b.HasKey("CommentId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Comments");
                 });
 
@@ -90,7 +92,14 @@ namespace TaskFlow.API.Migrations
                     b.Property<int>("TaskId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TesterId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DeveloperId");
+
+                    b.HasIndex("TesterId");
 
                     b.ToTable("Tasks");
                 });
@@ -122,6 +131,35 @@ namespace TaskFlow.API.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TaskFlow.API.Models.Comment", b =>
+                {
+                    b.HasOne("TaskFlow.API.Models.User", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TaskFlow.API.Models.TaskItem", b =>
+                {
+                    b.HasOne("TaskFlow.API.Models.User", null)
+                        .WithMany("AssignedTasks")
+                        .HasForeignKey("DeveloperId");
+
+                    b.HasOne("TaskFlow.API.Models.User", null)
+                        .WithMany("TestedTasks")
+                        .HasForeignKey("TesterId");
+                });
+
+            modelBuilder.Entity("TaskFlow.API.Models.User", b =>
+                {
+                    b.Navigation("AssignedTasks");
+
+                    b.Navigation("Comments");
+
+                    b.Navigation("TestedTasks");
                 });
 #pragma warning restore 612, 618
         }

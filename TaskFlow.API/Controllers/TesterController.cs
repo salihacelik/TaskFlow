@@ -25,13 +25,18 @@ namespace TaskFlow.API.Controllers
         [HttpGet("ready-for-test")]
         public async Task<IActionResult> GetReadyForTestTasks()
         {
+            // Sistemdeki tester'ın kimliğini çekiyoruz
+            var testerIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int parsedTesterId = int.Parse(testerIdString ?? "0");
+
+            // Sadece bu tester'a atanmış ve durumu 'READY FOR TEST' olan görevleri getir
             var readyTasks = await _context.Tasks
-                .Where(t => t.Status == "READY FOR TEST")
+                .Where(t => t.Status == "READY FOR TEST" && t.TesterId == parsedTesterId)
                 .ToListAsync();
 
             if (!readyTasks.Any())
             {
-                return NotFound("Şu an test edilmeyi bekleyen bir görev bulunmuyor.");
+                return NotFound("Size atanmış ve test edilmeyi bekleyen bir görev bulunmuyor.");
             }
 
             return Ok(readyTasks);
@@ -41,12 +46,19 @@ namespace TaskFlow.API.Controllers
         [HttpPut("evaluate-task")]
         public async Task<IActionResult> EvaluateTask([FromBody] EvaluateTaskDto dto)
         {
-            var task = await _context.Tasks.FindAsync(dto.TaskId);
+            // MANTIK HATASI ÇÖZÜMÜ: Sadece TaskId'ye göre nokta atışı arama yapıyoruz.
+            var task = await _context.Tasks.FirstOrDefaultAsync(t => t.TaskId == dto.TaskId);
+            
             if (task == null) return NotFound("Görev bulunamadı.");
 
-            // Sistemdeki tester'ın kimliğini JWT Token üzerinden alıp int'e çeviriyoruz
             var testerIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             int parsedTesterId = int.Parse(testerIdString ?? "0");
+
+            // Güvenlik Duvarı: Bu görev gerçekten isteği atan test uzmanına mı ait?
+            if (task.TesterId != parsedTesterId)
+            {
+                return StatusCode(403, "Bu görevi değerlendirme yetkiniz yok.");
+            }
 
             // Görev Yaşam Döngüsü kurallarını işletiyoruz
             if (dto.IsSuccessful)
@@ -78,15 +90,18 @@ namespace TaskFlow.API.Controllers
         [HttpPost("add-comment")]
         public async Task<IActionResult> AddComment([FromBody] TesterCommentDto dto)
         {
-            // Sistemdeki tester'ın kimliğini JWT Token üzerinden alıp int'e çeviriyoruz
             var testerIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             int parsedTesterId = int.Parse(testerIdString ?? "0");
             
+            // Mantıksal doğrulama: Yorum yapılmak istenen görev ID'si mevcut mu?
+            var task = await _context.Tasks.FirstOrDefaultAsync(t => t.TaskId == dto.TaskId);
+            if (task == null) return NotFound("Görev bulunamadı.");
+
             var comment = new Comment
             {
                 TaskId = dto.TaskId,
                 UserId = parsedTesterId,
-                CommentText = dto.CommentText ?? "" // Comment.cs ile birebir uyumlu
+                CommentText = dto.CommentText ?? "" 
             };
             
             _context.Comments.Add(comment);

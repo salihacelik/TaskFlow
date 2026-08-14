@@ -15,6 +15,9 @@ namespace TaskFlow.API.Models
         [ForeignKey("DeveloperId")]
         public ICollection<TaskItem> AssignedTasks { get; set; } = new List<TaskItem>();
 
+        [ForeignKey("TesterId")]
+        public ICollection<TaskItem> TestedTasks { get; set; } = new List<TaskItem>();
+        
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
