@@ -34,7 +34,9 @@ namespace TaskFlow.API.Controllers
             var newProject = new Project
             {
                 ProjectName = dto.ProjectName,
-                Description = dto.Description
+                Description = dto.Description,
+                Status = "Aktif"
+
             };
 
             _context.Projects.Add(newProject);
@@ -90,29 +92,80 @@ namespace TaskFlow.API.Controllers
             return Ok(new { Message = "Görev başarıyla atandı (ATANDI statüsünde).", TaskId = task.TaskId });
         }
 
-        // ==========================================
-        // 3. DASHBOARD: İstatistikleri Görüntüle[cite: 1]
-        // ==========================================
+       // ==========================================
+// 3. GELİŞMİŞ DASHBOARD: Tüm İstatistikleri ve Kadroyu Görüntüle
+// ==========================================
 
-        [HttpGet("dashboard")]
-        public async Task<IActionResult> GetDashboard()
-        {
-            // Sistemin analiz verilerini tek seferde veritabanından topluyoruz.
-            var totalProjects = await _context.Projects.CountAsync();
-            
-            // "COMPLETED" (Onaylandı) ve "BUG OLUŞTURULDU" statüsündeki görevleri sayıyoruz[cite: 1].
-            var completedTasks = await _context.Tasks.CountAsync(t => t.Status == "COMPLETED");
-            var totalBugs = await _context.Tasks.CountAsync(t => t.Status == "BUG OLUŞTURULDU");
+[HttpGet("dashboard")]
+public async Task<IActionResult> GetDashboard()
+{
+    // 1. PROJE LİSTESİ: Tüm projelerin adları ve güncel durumları
+    var projectsList = await _context.Projects
+        .Select(p => new { 
+            ProjectName = p.ProjectName, 
+            Status = p.Status 
+        })
+        .ToListAsync();
 
-            return Ok(new 
-            { 
-                Message = "Dashboard verileri başarıyla getirildi.",
-                TotalProjects = totalProjects,
+    // 2. KADRO (GELİŞTİRİCİLER VE TEST UZMANLARI)
+    // Sadece rolü "Developer" olan kullanıcıları çekiyoruz
+    var developers = await _context.Users
+        .Where(u => u.Role == "Developer")
+        .Select(u => new { 
+            u.Id, 
+            u.Username, 
+            u.Email 
+        })
+        .ToListAsync();
+
+    // Sadece rolü "Tester" olan kullanıcıları çekiyoruz
+    var testers = await _context.Users
+        .Where(u => u.Role == "Tester")
+        .Select(u => new { 
+            u.Id, 
+            u.Username, 
+            u.Email 
+        })
+        .ToListAsync();
+
+    // 3. PROJE VE GÖREV İSTATİSTİKLERİ
+    // Proje bazlı metrikler (Yapılmakta Olan vs Yapılan)
+    var ongoingProjectsCount = await _context.Projects.CountAsync(p => p.Status == "Aktif");
+    var completedProjectsCount = await _context.Projects.CountAsync(p => p.Status != "Aktif"); 
+    
+    // TaskFlow kuralına uygun görev (Task) metrikleri
+    var totalProjects = projectsList.Count;
+    var completedTasks = await _context.Tasks.CountAsync(t => t.Status == "COMPLETED");
+    var totalBugs = await _context.Tasks.CountAsync(t => t.Status == "BUG OLUŞTURULDU");
+
+    // Tüm verileri tek bir JSON objesi (DTO mantığı) ile yöneticiye sunuyoruz
+    return Ok(new 
+    { 
+        Message = "Gelişmiş Dashboard verileri başarıyla getirildi.",
+        
+        // Üst Kısım: İstatistikler
+        Statistics = new {
+            Projects = new {
+                Total = totalProjects,
+                Ongoing = ongoingProjectsCount,
+                Completed = completedProjectsCount
+            },
+            Tasks = new {
                 CompletedTasks = completedTasks,
                 TotalBugs = totalBugs
-            });
+            }
+        },
+
+        // Orta Kısım: Proje Listesi
+        ProjectsOverview = projectsList,
+
+        // Alt Kısım: Ekip Kadrosu
+        Team = new {
+            Developers = developers,
+            Testers = testers
         }
-    }
+    });
+}
 
     // --- DTO SINIFLARI (Temiz Veri Aktarımı İçin) ---
     
