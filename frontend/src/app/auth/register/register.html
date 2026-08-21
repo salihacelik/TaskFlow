@@ -1,0 +1,63 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      
+      <!-- Kayıt Kartı -->
+      <div class="card shadow-lg border-0 rounded-4 mt-5">
+        
+        <!-- Kart Başlığı -->
+        <div class="card-header text-white text-center py-4 gradient-header rounded-top-4">
+          <h3 class="fw-bold my-2">TaskFlow Kayıt</h3>
+          <p class="small mb-0 text-white-50">Sisteme katılmak için bilgilerinizi girin ve rolünüzü seçin.</p>
+        </div>
+        
+        <div class="card-body p-5">
+          <form>
+            
+            <!-- Ad Soyad Kutusu -->
+            <div class="form-floating mb-4 custom-input">
+              <input class="form-control" id="inputName" type="text" placeholder="Ad Soyad" />
+              <label for="inputName">Ad Soyad</label>
+            </div>
+            
+            <!-- E-posta Kutusu -->
+            <div class="form-floating mb-4 custom-input">
+              <input class="form-control" id="inputEmail" type="email" placeholder="ornek@taskflow.com" />
+              <label for="inputEmail">E-posta Adresi</label>
+            </div>
+            
+            <!-- Şifre Kutusu -->
+            <div class="form-floating mb-4 custom-input">
+              <input class="form-control" id="inputPassword" type="password" placeholder="Şifre" />
+              <label for="inputPassword">Şifre</label>
+            </div>
+
+            <!-- Rol Seçimi -->
+            <div class="form-floating mb-4 custom-input">
+              <select class="form-select" id="inputRole" aria-label="Rol Seçimi">
+                <option value="Manager">Manager (Yönetici)</option>
+                <option value="Developer">Developer (Geliştirici)</option>
+                <option value="Tester">Tester (Test Uzmanı)</option>
+              </select>
+              <label for="inputRole">Kullanıcı Rolü</label>
+            </div>
+
+            <!-- TEK VE ÇALIŞAN KAYIT BUTONU -->
+            <div class="d-grid mt-4 mb-0">
+              <button (click)="onRegister()" class="btn gradient-btn py-3 fw-bold rounded-pill shadow-sm" type="button">KAYIT OL</button>
+            </div>
+            
+          </form>
+        </div>
+        
+        <!-- Giriş Yap Yönlendirmesi -->
+        <div class="card-footer text-center py-3 bg-white rounded-bottom-4 border-top-0">
+          <div class="small">
+            <a href="/login" class="register-link fw-semibold">Zaten hesabın var mı? Giriş Yap!</a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>

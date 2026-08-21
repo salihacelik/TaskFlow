@@ -1,0 +1,38 @@
+/* Angular Logosu Tonları (Kırmızı/Pembe ve Mor Geçişi) */
+.gradient-header {
+  background: linear-gradient(135deg, #dd0031 0%, #c3002f 50%, #531055 100%);
+}
+
+/* Yaratıcı ve Canlı Buton Tasarımı */
+.gradient-btn {
+  background: linear-gradient(135deg, #ff0052 0%, #b800c4 100%);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+/* Butonun Üzerine Gelindiğinde (Hover) Çalışacak Efekt */
+.gradient-btn:hover {
+  background: linear-gradient(135deg, #b800c4 0%, #ff0052 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(184, 0, 196, 0.4) !important;
+  color: white;
+}
+
+/* Input (Kutu) Odaklanma Efektleri - Seçilince Mor Çerçeve */
+.custom-input .form-control:focus {
+  border-color: #b800c4;
+  box-shadow: 0 0 0 0.25rem rgba(184, 0, 196, 0.25);
+}
+
+/* Kayıt Ol Linki Rengi ve Animasyonu */
+.register-link {
+  color: #531055;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.register-link:hover {
+  color: #ff0052;
+}
