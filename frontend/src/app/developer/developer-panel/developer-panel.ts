@@ -1,9 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-developer-panel',
-  imports: [],
-  templateUrl: './developer-panel.html',
-  styleUrl: './developer-panel.css',
+  selector: 'app-developer-panel', // Senin selector adın farklıysa ona dokunma
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './developer-panel.html'
 })
-export class DeveloperPanel {}
+export class DeveloperPanel implements OnInit {
+  
+  // HTML'in aradığı ve hata fırlattığı o kritik değişken:
+  kullaniciAdi: string = '';
+
+  ngOnInit() {
+    // Sisteme giriş yapan geliştiricinin adını hafızadan alıyoruz
+    this.kullaniciAdi = localStorage.getItem('aktifKullanici') || 'Saliha';
+  }
+}

@@ -1,1 +1,142 @@
-<p>developer-panel works!</p>
+<div class="container-fluid p-4" style="background-color: #F8F9FA; min-height: 100vh;">
+  
+  <!-- Üst Başlık -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-dark">Hoşgeldin, <span style="color: #dd0031;">{{ kullaniciAdi }} (Developer)</span></h3>
+    <div>
+      <button class="btn btn-white rounded-circle shadow-sm me-2"><i class="bi bi-person text-dark"></i></button>
+      <button class="btn btn-white rounded-circle shadow-sm"><i class="bi bi-gear text-dark"></i></button>
+    </div>
+  </div>
+
+  <!-- Ana Paneller (Kırmızı, Pembe, Mor Geçişli) -->
+  <div class="row g-4 mb-4">
+    
+    <!-- 1. KIRMIZI PANEL: Bana Atanan Görevler & Durum Güncelle -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
+        <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%);">
+          <h1 class="mb-0"><i class="bi bi-list-task"></i></h1>
+          <h5 class="fw-bold mt-2">BANA ATANAN GÖREVLER</h5>
+        </div>
+        <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
+          <!-- Örnek Görev Kartı -->
+          <div class="border rounded p-3 mb-3 bg-light">
+            <h6 class="fw-bold text-dark mb-1">E-Ticaret Veritabanı Mimarisi</h6>
+            <small class="text-muted d-block mb-2">Proje: Alpha V1</small>
+            <label class="form-label small fw-bold mt-2">Durum Güncelle:</label>
+            <select class="form-select border-0 shadow-sm">
+              <option selected>Atandı</option>
+              <option>In Progress (Yapılıyor)</option>
+              <option>Ready for Test (Teste Hazır)</option>
+            </select>
+          </div>
+          
+          <div class="mt-auto pt-2">
+             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%); border: none;">DURUMLARI KAYDET</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PEMBE PANEL: Tester Hata Raporları -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column"> 
+        <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%);">
+          <h1 class="mb-0"><i class="bi bi-bug"></i></h1>
+          <h5 class="fw-bold mt-2">HATA (BUG) RAPORLARI</h5>
+        </div>
+        <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
+          <!-- Örnek Hata Kartı -->
+          <div class="border-start border-4 border-danger rounded p-3 mb-3 bg-light">
+            <h6 class="fw-bold text-dark mb-1">Login API Hatası</h6>
+            <small class="text-danger d-block fw-bold mb-2">Gönderen: Ayşe (Tester)</small>
+            <p class="small text-muted mb-2">"Sunucu 500 hatası dönüyor, bağlantıyı kontrol et."</p>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="bugFix1">
+              <label class="form-check-label small fw-bold text-success" for="bugFix1">Çözüldü Olarak İşaretle</label>
+            </div>
+          </div>
+          
+          <div class="mt-auto pt-2">
+             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%); border: none;">RAPORLARI GÜNCELLE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. MOR PANEL: Yorum Ekle -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
+        <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #830051 0%, #531055 100%);">
+          <h1 class="mb-0"><i class="bi bi-chat-left-text"></i></h1>
+          <h5 class="fw-bold mt-2">GÖREVE YORUM EKLE</h5>
+        </div>
+        <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
+          <select class="form-select mb-3 bg-light border-0 text-muted shadow-sm">
+            <option selected>Yorum Yapılacak Görevi Seç</option>
+            <option>E-Ticaret Veritabanı Mimarisi</option>
+          </select>
+          <textarea class="form-control bg-light border-0 mb-2 shadow-sm" rows="4" placeholder="Teknik detayları veya gecikme nedenlerini buraya yazın..."></textarea>
+          
+          <div class="mt-auto pt-3">
+             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #830051 0%, #531055 100%); border: none;">YORUMU GÖNDER</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- 5. YENİ EKLENEN: Ekip Yorumları ve Sistem Aktiviteleri Paneli -->
+  <div class="row mt-4 mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0 rounded-4">
+        <!-- Koyu Tema Başlık -->
+        <div class="card-header text-white rounded-top-4 py-3" style="background: #2b2b2b;">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-chat-quote me-2"></i>Ekip Yorumları ve Görev Geçmişi</h6>
+        </div>
+        <!-- Yorumlar Listesi (SQL'den dinamik çekilecek) -->
+        <div class="card-body bg-white rounded-bottom-4 shadow" style="max-height: 250px; overflow-y: auto;">
+          
+          <!-- Manager Yorumu Örneği -->
+          <div class="border-bottom pb-3 mb-3">
+            <small class="fw-bold" style="color: #dd0031;"><i class="bi bi-person-badge me-1"></i>Manager (Yönetici) - E-Ticaret Veritabanı Mimarisi:</small>
+            <p class="mb-0 mt-1 small text-muted">"Tabloları oluştururken ilişkisel bütünlüğe dikkat edelim. Görevi sana atadım, kolay gelsin."</p>
+            <small class="text-black-50" style="font-size: 0.75rem;">10 dakika önce</small>
+          </div>
+
+          <!-- Tester Yorumu Örneği -->
+          <div class="border-bottom pb-3 mb-3">
+            <small class="fw-bold" style="color: #b800c4;"><i class="bi bi-bug me-1"></i>Tester (Ayşe) - Login API Hatası:</small>
+            <p class="mb-0 mt-1 small text-muted">"Sunucu 500 hatası dönüyor, bağlantıyı kontrol et. Durumu 'Bug' olarak güncelleyip sana geri gönderdim."</p>
+            <small class="text-black-50" style="font-size: 0.75rem;">1 saat önce</small>
+          </div>
+
+          <!-- Developer (Senin) Yorumun Örneği -->
+          <div class="pb-1">
+            <small class="fw-bold text-success"><i class="bi bi-code-slash me-1"></i>Sen (Developer) - Proje Alpha V1:</small>
+            <p class="mb-0 mt-1 small text-muted">"Gerekli güncellemeleri tamamladım. Durumu 'In Progress'ten 'Ready for Test'e çekiyorum."</p>
+            <small class="text-black-50" style="font-size: 0.75rem;">2 saat önce</small>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 4. ALT İSTATİSTİKLER (Developer Performansı) -->
+  <div class="row g-3 mt-2">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #dd0031 !important;">
+        <small class="text-muted fw-bold">Üzerimdeki Toplam Görev</small>
+        <h4 class="fw-bold mb-0 text-dark">12</h4> 
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #b800c4 !important;">
+        <small class="text-muted fw-bold">Tamamlanan Görevlerim</small>
+        <h4 class="fw-bold mb-0 text-success">8</h4>
+      </div>
+    </div>
+  </div>
+
+</div>

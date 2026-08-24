@@ -17,7 +17,7 @@ export const routes: Routes = [
   // Manager (Yönetici) Rotası
   { 
     path: 'manager', 
-    loadComponent: () => import('./manager/manager-dashboard/manager-dashboard').then(m => m.ManagerDashboard) 
+    loadComponent: () => import('./manager/manager-dashboard/manager-dashboard').then(m => m.ManagerDashboardComponent)
   },
 
   // Developer (Geliştirici) Rotası

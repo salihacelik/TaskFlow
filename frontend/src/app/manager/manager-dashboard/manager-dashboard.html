@@ -1,1 +1,147 @@
-<p>manager-dashboard works!</p>
+<div class="container-fluid p-4" style="background-color: #F8F9FA; min-height: 100vh;">
+  
+  <!-- Üst Başlık (Kim Giriş Yaptıysa Onun Adı Gelecek) -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-dark">Hoşgeldin, <span style="color: #dd0031;">{{ kullaniciAdi }}</span></h3>
+    <div>
+      <button class="btn btn-white rounded-circle shadow-sm me-2"><i class="bi bi-person text-dark"></i></button>
+      <button class="btn btn-white rounded-circle shadow-sm"><i class="bi bi-gear text-dark"></i></button>
+    </div>
+  </div>
+
+  <!-- Ana Paneller (Kırmızı, Pembe, Mor Geçişli) -->
+  <div class="row g-4 mb-4">
+    
+    <!-- 1. KIRMIZI PANEL: Proje Ekle -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
+        <!-- Angular Kırmızı Başlık Kutusu -->
+        <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%);">
+          <h1 class="mb-0"><i class="bi bi-plus-circle"></i></h1>
+          <h5 class="fw-bold mt-2">PROJE EKLE</h5>
+        </div>
+        <!-- İç Form -->
+        <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
+          <h6 class="fw-bold mb-3">YENİ PROJE EKLE</h6>
+          <label class="form-label small text-muted">Proje Adı</label>
+          
+          <input type="text" [(ngModel)]="yeniProjeAdi" class="form-control mb-3 bg-light border-0" placeholder="[Proje Adı Girin]">
+          
+          <label class="form-label small text-muted">Görev Başlıkları</label>
+          <div class="input-group mb-2">
+            <input type="text" class="form-control bg-light border-0" placeholder="Görev Başlıkları">
+            <button class="btn btn-outline-danger border-0 bg-light text-danger fw-bold">+</button>
+          </div>
+          
+          <div class="mt-auto pt-3">
+             <button (click)="projeEkle()" class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%); border: none;">SİSTEME EKLE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PEMBE/MAGENTA PANEL: Görev Ata -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column"> 
+        <!-- Magenta Başlık Kutusu -->
+        <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%);">
+          <h1 class="mb-0"><i class="bi bi-arrow-left-right"></i></h1>
+          <h5 class="fw-bold mt-2">GÖREV ATA</h5>
+        </div>
+        <!-- İç Form -->
+        <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
+          <select class="form-select mb-3 bg-light border-0 text-muted">
+            <option selected>Aktif Projelerden Seç</option>
+            <option *ngFor="let proje of projeler" [value]="proje.id">{{ proje.ad }}</option>
+          </select>
+          <select class="form-select mb-3 bg-light border-0 text-muted">
+            <option selected>Görev Başlığı Seç</option>
+          </select>
+          <select class="form-select mb-3 bg-light border-0 text-muted">
+            <option selected>Geliştiriciler (Developer Seç)</option>
+          </select>
+          <textarea class="form-control bg-light border-0 mb-2" rows="2" placeholder="Bu proje için açıklama yap..."></textarea>
+          
+          <div class="mt-auto pt-3">
+             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%); border: none;">GÖREVİ ATA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. MOR PANEL: Projeler -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
+        <!-- Koyu Mor Başlık Kutusu -->
+        <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #830051 0%, #531055 100%);">
+          <h1 class="mb-0"><i class="bi bi-folder2-open"></i></h1>
+          <h5 class="fw-bold mt-2">PROJELER</h5>
+        </div>
+        <!-- İç Form -->
+        <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
+          <h6 class="fw-bold mb-3">AKTİF PROJELER</h6>
+          <!-- Görev Listesi -->
+          <div class="border-0 rounded p-3 mb-2 bg-light d-flex justify-content-between align-items-center shadow-sm">
+            <div>
+              <h6 class="mb-0 fw-bold">Proje Adı</h6>
+              <small class="text-muted">[Proje Adı Girin]</small>
+            </div>
+            <div class="spinner-border text-danger spinner-border-sm" role="status"></div>
+          </div>
+          
+          <div class="mt-auto pt-3">
+             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #830051 0%, #531055 100%); border: none;">TÜMÜNÜ GÖR</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Yorumlar ve Aktivite Akışı Paneli -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header text-white rounded-top-4 py-3" style="background: #2b2b2b;">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-activity me-2"></i>Sistem Aktiviteleri ve Ekip Yorumları</h6>
+        </div>
+        <div class="card-body bg-white rounded-bottom-4 shadow" style="max-height: 200px; overflow-y: auto;">
+          <div class="border-bottom pb-2 mb-2">
+            <small class="fw-bold" style="color: #e83e8c;">Developer (Ahmet) - E-Ticaret Projesi:</small>
+            <p class="mb-0 small text-muted">"Veritabanı bağlantılarında hata alıyorum, API tarafını kontrol edebilir misiniz?"</p>
+          </div>
+          <div class="border-bottom pb-2 mb-2">
+            <small class="fw-bold" style="color: #531055;">Tester (Ayşe) - Mobil Uygulama:</small>
+            <p class="mb-0 small text-muted">"Login ekranındaki buton hatası (bug) tespit edildi ve raporlandı."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ALT İSTATİSTİKLER (Dashboard) -->
+  <div class="row g-3">
+    <!-- Toplam Proje -->
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #dd0031 !important;">
+        <small class="text-muted fw-bold">Toplam Proje</small>
+        <h4 class="fw-bold mb-0 text-dark">{{ toplamProje }}</h4> 
+      </div>
+    </div>
+    <!-- Tamamlanan Proje -->
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #b800c4 !important;">
+        <small class="text-muted fw-bold">Tamamlanan Projeler</small>
+        <h4 class="fw-bold mb-0 text-success">{{ tamamlananProje }}</h4>
+      </div>
+    </div>
+    <!-- Toplam Bug -->
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #531055 !important;">
+        <small class="text-muted fw-bold">Toplam Bug</small>
+        <h4 class="fw-bold mb-0 text-danger">{{ toplamBug }}</h4>
+      </div>
+    </div>
+  </div>
+
+</div>
