@@ -9,7 +9,7 @@ export const routes: Routes = [
   },    
   { 
     path: 'register', 
-    loadComponent: () => import('./auth/register/register').then(m => m.Register) 
+    loadComponent: () => import('./auth/register/register').then((m: any) => m.RegisterComponent ) 
   },
 
   // 2. YETKİYE GÖRE YÖNLENDİRME KAVŞAĞI

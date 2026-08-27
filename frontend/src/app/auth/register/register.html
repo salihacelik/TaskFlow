@@ -16,19 +16,19 @@
             
             <!-- Ad Soyad Kutusu -->
             <div class="form-floating mb-4 custom-input">
-              <input class="form-control" id="inputName" type="text" placeholder="Ad Soyad" />
+              <input type="text" [(ngModel)]="girilenKullaniciAdi" name="username" class="form-control" placeholder="Ad Soyad" />
               <label for="inputName">Ad Soyad</label>
             </div>
             
             <!-- E-posta Kutusu -->
             <div class="form-floating mb-4 custom-input">
-              <input class="form-control" id="inputEmail" type="email" placeholder="ornek@taskflow.com" />
+              <input type="email" [(ngModel)]="girilenEmail" name="email" class="form-control" placeholder="E-posta" />
               <label for="inputEmail">E-posta Adresi</label>
             </div>
             
             <!-- Şifre Kutusu -->
             <div class="form-floating mb-4 custom-input">
-              <input class="form-control" id="inputPassword" type="password" placeholder="Şifre" />
+              <input type="password" [(ngModel)]="girilenSifre" name="password" class="form-control" placeholder="Şifre" />
               <label for="inputPassword">Şifre</label>
             </div>
 

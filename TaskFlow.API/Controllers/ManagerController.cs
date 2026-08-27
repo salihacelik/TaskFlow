@@ -112,7 +112,7 @@ public async Task<IActionResult> GetDashboard()
     var developers = await _context.Users
         .Where(u => u.Role == "Developer")
         .Select(u => new { 
-            u.Id, 
+            u.UserId, 
             u.Username, 
             u.Email 
         })
@@ -122,7 +122,7 @@ public async Task<IActionResult> GetDashboard()
     var testers = await _context.Users
         .Where(u => u.Role == "Tester")
         .Select(u => new { 
-            u.Id, 
+            u.UserId, 
             u.Username, 
             u.Email 
         })
@@ -166,7 +166,7 @@ public async Task<IActionResult> GetDashboard()
         }
     });
 }
-
+}
     // --- DTO SINIFLARI (Temiz Veri Aktarımı İçin) ---
     
     public class ProjectDto

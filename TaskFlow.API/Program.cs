@@ -57,7 +57,13 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy => policy.WithOrigins("http://localhost:4200") // Angular'ın adresi
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
 // 2. PROJENİN İNŞA EDİLMESİ
 var app = builder.Build(); 
 
@@ -73,6 +79,7 @@ app.UseHttpsRedirection();
 
 // KİMLİK DOĞRULAMA MİDDLEWARE'İ (YENİ EKLENEN KISIM - Mutlaka UseAuthorization'dan önce olmalı)
 app.UseAuthentication(); 
+app.UseCors("AllowAngular"); // Sıralama çok önemli, UseAuthorization'dan üstte olmalı!
 app.UseAuthorization();
 
 app.MapControllers();
