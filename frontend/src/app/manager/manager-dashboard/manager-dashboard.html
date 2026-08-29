@@ -1,6 +1,5 @@
 <div class="container-fluid p-4" style="background-color: #F8F9FA; min-height: 100vh;">
   
-  <!-- Üst Başlık (Kim Giriş Yaptıysa Onun Adı Gelecek) -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold text-dark">Hoşgeldin, <span style="color: #dd0031;">{{ kullaniciAdi }}</span></h3>
     <div>
@@ -9,30 +8,24 @@
     </div>
   </div>
 
-  <!-- Ana Paneller (Kırmızı, Pembe, Mor Geçişli) -->
   <div class="row g-4 mb-4">
     
-    <!-- 1. KIRMIZI PANEL: Proje Ekle -->
+    <!-- 1. KIRMIZI PANEL -->
     <div class="col-md-4">
       <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
-        <!-- Angular Kırmızı Başlık Kutusu -->
         <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%);">
           <h1 class="mb-0"><i class="bi bi-plus-circle"></i></h1>
           <h5 class="fw-bold mt-2">PROJE EKLE</h5>
         </div>
-        <!-- İç Form -->
         <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
           <h6 class="fw-bold mb-3">YENİ PROJE EKLE</h6>
           <label class="form-label small text-muted">Proje Adı</label>
-          
           <input type="text" [(ngModel)]="yeniProjeAdi" class="form-control mb-3 bg-light border-0" placeholder="[Proje Adı Girin]">
-          
           <label class="form-label small text-muted">Görev Başlıkları</label>
           <div class="input-group mb-2">
             <input type="text" class="form-control bg-light border-0" placeholder="Görev Başlıkları">
             <button class="btn btn-outline-danger border-0 bg-light text-danger fw-bold">+</button>
           </div>
-          
           <div class="mt-auto pt-3">
              <button (click)="projeEkle()" class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%); border: none;">SİSTEME EKLE</button>
           </div>
@@ -40,51 +33,50 @@
       </div>
     </div>
 
-    <!-- 2. PEMBE/MAGENTA PANEL: Görev Ata -->
+    <!-- 2. PEMBE PANEL -->
     <div class="col-md-4">
       <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column"> 
-        <!-- Magenta Başlık Kutusu -->
         <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%);">
           <h1 class="mb-0"><i class="bi bi-arrow-left-right"></i></h1>
           <h5 class="fw-bold mt-2">GÖREV ATA</h5>
         </div>
-        <!-- İç Form -->
         <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
-          <select class="form-select mb-3 bg-light border-0 text-muted">
-            <option selected>Aktif Projelerden Seç</option>
-            <option *ngFor="let proje of projeler" [value]="proje.id">{{ proje.ad }}</option>
+          
+          <select class="form-select mb-3 bg-light border-0 text-muted" [(ngModel)]="secilenProjeId">
+            <option [ngValue]="null" selected>Aktif Projelerden Seç</option>
+            <option *ngFor="let proje of projeler" [value]="proje.projectId">{{ proje.projectName }}</option>
           </select>
-          <select class="form-select mb-3 bg-light border-0 text-muted">
-            <option selected>Görev Başlığı Seç</option>
+          
+          <select class="form-select mb-3 bg-light border-0 text-muted" [(ngModel)]="secilenGelistiriciId">
+            <option [ngValue]="null" selected>Geliştiriciler (Developer Seç)</option>
+            <option *ngFor="let dev of gelistiriciler" [value]="dev.userId">{{ dev.username }}</option>
           </select>
-          <select class="form-select mb-3 bg-light border-0 text-muted">
-            <option selected>Geliştiriciler (Developer Seç)</option>
-          </select>
-          <textarea class="form-control bg-light border-0 mb-2" rows="2" placeholder="Bu proje için açıklama yap..."></textarea>
+          
+          <textarea class="form-control bg-light border-0 mb-2" rows="2" placeholder="Bu proje için açıklama yap..." [(ngModel)]="gorevAciklamasi"></textarea>
           
           <div class="mt-auto pt-3">
-             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%); border: none;">GÖREVİ ATA</button>
+             <button (click)="gorevAta()" class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%); border: none;">GÖREVİ ATA</button>
           </div>
+          
         </div>
       </div>
     </div>
 
-    <!-- 3. MOR PANEL: Projeler -->
+    <!-- 3. MOR PANEL -->
     <div class="col-md-4">
       <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
-        <!-- Koyu Mor Başlık Kutusu -->
         <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #830051 0%, #531055 100%);">
           <h1 class="mb-0"><i class="bi bi-folder2-open"></i></h1>
           <h5 class="fw-bold mt-2">PROJELER</h5>
         </div>
-        <!-- İç Form -->
         <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
           <h6 class="fw-bold mb-3">AKTİF PROJELER</h6>
-          <!-- Görev Listesi -->
-          <div class="border-0 rounded p-3 mb-2 bg-light d-flex justify-content-between align-items-center shadow-sm">
+          
+          <!-- C#'tan gelen Projeleri listeler -->
+          <div class="border-0 rounded p-3 mb-2 bg-light d-flex justify-content-between align-items-center shadow-sm" *ngFor="let proje of projeler">
             <div>
-              <h6 class="mb-0 fw-bold">Proje Adı</h6>
-              <small class="text-muted">[Proje Adı Girin]</small>
+              <h6 class="mb-0 fw-bold">{{ proje.projectName }}</h6>
+              <small class="text-muted">Durum: {{ proje.status }}</small>
             </div>
             <div class="spinner-border text-danger spinner-border-sm" role="status"></div>
           </div>
@@ -98,7 +90,6 @@
 
   </div>
 
-  <!-- Yorumlar ve Aktivite Akışı Paneli -->
   <div class="row mb-4">
     <div class="col-12">
       <div class="card shadow-sm border-0 rounded-4">
@@ -121,21 +112,18 @@
 
   <!-- 4. ALT İSTATİSTİKLER (Dashboard) -->
   <div class="row g-3">
-    <!-- Toplam Proje -->
     <div class="col">
       <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #dd0031 !important;">
         <small class="text-muted fw-bold">Toplam Proje</small>
         <h4 class="fw-bold mb-0 text-dark">{{ toplamProje }}</h4> 
       </div>
     </div>
-    <!-- Tamamlanan Proje -->
     <div class="col">
       <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #b800c4 !important;">
         <small class="text-muted fw-bold">Tamamlanan Projeler</small>
         <h4 class="fw-bold mb-0 text-success">{{ tamamlananProje }}</h4>
       </div>
     </div>
-    <!-- Toplam Bug -->
     <div class="col">
       <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #531055 !important;">
         <small class="text-muted fw-bold">Toplam Bug</small>

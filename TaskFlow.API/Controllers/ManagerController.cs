@@ -100,12 +100,14 @@ namespace TaskFlow.API.Controllers
 public async Task<IActionResult> GetDashboard()
 {
     // 1. PROJE LİSTESİ: Tüm projelerin adları ve güncel durumları
-    var projectsList = await _context.Projects
-        .Select(p => new { 
-            ProjectName = p.ProjectName, 
-            Status = p.Status 
-        })
-        .ToListAsync();
+    // 1. PROJE LİSTESİ: Tüm projelerin adları ve güncel durumları
+var projectsList = await _context.Projects
+    .Select(p => new { 
+        ProjectId = p.ProjectId, // <-- SADECE BU SATIRI EKLEDİK
+        ProjectName = p.ProjectName, 
+        Status = p.Status 
+    })
+    .ToListAsync();
 
     // 2. KADRO (GELİŞTİRİCİLER VE TEST UZMANLARI)
     // Sadece rolü "Developer" olan kullanıcıları çekiyoruz

@@ -9,10 +9,10 @@
     </div>
   </div>
 
-  <!-- Ana Paneller (Kırmızı, Pembe, Mor Geçişli) -->
+  <!-- Ana Paneller -->
   <div class="row g-4 mb-4">
     
-    <!-- 1. KIRMIZI PANEL: Bana Atanan Görevler & Durum Güncelle -->
+    <!-- 1. KIRMIZI PANEL -->
     <div class="col-md-4">
       <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
         <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%);">
@@ -20,26 +20,27 @@
           <h5 class="fw-bold mt-2">BANA ATANAN GÖREVLER</h5>
         </div>
         <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
-          <!-- Örnek Görev Kartı -->
-          <div class="border rounded p-3 mb-3 bg-light">
-            <h6 class="fw-bold text-dark mb-1">E-Ticaret Veritabanı Mimarisi</h6>
-            <small class="text-muted d-block mb-2">Proje: Alpha V1</small>
+          
+          <!-- Angular Döngüsü: Görevler -->
+          <div class="border rounded p-3 mb-3 bg-light" *ngFor="let gorev of atananGorevler">
+            <h6 class="fw-bold text-dark mb-1">{{ gorev.description }}</h6>
+            <small class="text-muted d-block mb-2">Proje: {{ gorev.projectName }}</small>
             <label class="form-label small fw-bold mt-2">Durum Güncelle:</label>
-            <select class="form-select border-0 shadow-sm">
-              <option selected>Atandı</option>
-              <option>In Progress (Yapılıyor)</option>
-              <option>Ready for Test (Teste Hazır)</option>
+            <select class="form-select border-0 shadow-sm" [(ngModel)]="gorev.status">
+              <option value="ATANDI">Atandı</option>
+              <option value="YAPILIYOR">In Progress (Yapılıyor)</option>
+              <option value="TAMAMLANDI">Tamamlandı</option>
             </select>
           </div>
           
           <div class="mt-auto pt-2">
-             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%); border: none;">DURUMLARI KAYDET</button>
+             <button (click)="durumlariKaydet()" class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #dd0031 0%, #c3002f 100%); border: none;">DURUMLARI KAYDET</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 2. PEMBE PANEL: Tester Hata Raporları -->
+    <!-- 2. PEMBE PANEL -->
     <div class="col-md-4">
       <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column"> 
         <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%);">
@@ -47,25 +48,25 @@
           <h5 class="fw-bold mt-2">HATA (BUG) RAPORLARI</h5>
         </div>
         <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
-          <!-- Örnek Hata Kartı -->
-          <div class="border-start border-4 border-danger rounded p-3 mb-3 bg-light">
-            <h6 class="fw-bold text-dark mb-1">Login API Hatası</h6>
-            <small class="text-danger d-block fw-bold mb-2">Gönderen: Ayşe (Tester)</small>
-            <p class="small text-muted mb-2">"Sunucu 500 hatası dönüyor, bağlantıyı kontrol et."</p>
+          
+          <!-- Angular Döngüsü: Buglar -->
+          <div class="border-start border-4 border-danger rounded p-3 mb-3 bg-light" *ngFor="let bug of bugRaporlari">
+            <h6 class="fw-bold text-dark mb-1">{{ bug.description }}</h6>
+            <small class="text-danger d-block fw-bold mb-2">Gönderen: Tester / Proje: {{ bug.projectName }}</small>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="bugFix1">
-              <label class="form-check-label small fw-bold text-success" for="bugFix1">Çözüldü Olarak İşaretle</label>
+              <input class="form-check-input" type="checkbox" [id]="'bugFix' + bug.taskId" [(ngModel)]="bug.cozuldu">
+              <label class="form-check-label small fw-bold text-success" [for]="'bugFix' + bug.taskId">Çözüldü Olarak İşaretle</label>
             </div>
           </div>
           
           <div class="mt-auto pt-2">
-             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%); border: none;">RAPORLARI GÜNCELLE</button>
+             <button (click)="raporlariGuncelle()" class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #e83e8c 0%, #b800c4 100%); border: none;">RAPORLARI GÜNCELLE</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 3. MOR PANEL: Yorum Ekle -->
+    <!-- 3. MOR PANEL -->
     <div class="col-md-4">
       <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
         <div class="text-white text-center py-4 rounded-top-4" style="background: linear-gradient(135deg, #830051 0%, #531055 100%);">
@@ -73,68 +74,50 @@
           <h5 class="fw-bold mt-2">GÖREVE YORUM EKLE</h5>
         </div>
         <div class="card-body p-4 bg-white rounded-bottom-4 shadow d-flex flex-column">
-          <select class="form-select mb-3 bg-light border-0 text-muted shadow-sm">
-            <option selected>Yorum Yapılacak Görevi Seç</option>
-            <option>E-Ticaret Veritabanı Mimarisi</option>
+          <select class="form-select mb-3 bg-light border-0 text-muted shadow-sm" [(ngModel)]="secilenYorumGorevId">
+            <option [ngValue]="null" selected>Yorum Yapılacak Görevi Seç</option>
+            <option *ngFor="let gorev of atananGorevler" [value]="gorev.taskId">{{ gorev.description }}</option>
           </select>
-          <textarea class="form-control bg-light border-0 mb-2 shadow-sm" rows="4" placeholder="Teknik detayları veya gecikme nedenlerini buraya yazın..."></textarea>
+          <textarea class="form-control bg-light border-0 mb-2 shadow-sm" rows="4" placeholder="Teknik detayları veya gecikme nedenlerini buraya yazın..." [(ngModel)]="yeniYorumMetni"></textarea>
           
           <div class="mt-auto pt-3">
-             <button class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #830051 0%, #531055 100%); border: none;">YORUMU GÖNDER</button>
+             <button (click)="yorumGonder()" class="btn w-100 text-white fw-bold rounded-pill shadow-sm py-2" style="background: linear-gradient(135deg, #830051 0%, #531055 100%); border: none;">YORUMU GÖNDER</button>
           </div>
         </div>
       </div>
     </div>
 
   </div>
-  <!-- 5. YENİ EKLENEN: Ekip Yorumları ve Sistem Aktiviteleri Paneli -->
+
+  <!-- Sistem Aktiviteleri -->
   <div class="row mt-4 mb-4">
     <div class="col-12">
       <div class="card shadow-sm border-0 rounded-4">
-        <!-- Koyu Tema Başlık -->
         <div class="card-header text-white rounded-top-4 py-3" style="background: #2b2b2b;">
           <h6 class="mb-0 fw-bold"><i class="bi bi-chat-quote me-2"></i>Ekip Yorumları ve Görev Geçmişi</h6>
         </div>
-        <!-- Yorumlar Listesi (SQL'den dinamik çekilecek) -->
         <div class="card-body bg-white rounded-bottom-4 shadow" style="max-height: 250px; overflow-y: auto;">
-          
-          <!-- Manager Yorumu Örneği -->
           <div class="border-bottom pb-3 mb-3">
-            <small class="fw-bold" style="color: #dd0031;"><i class="bi bi-person-badge me-1"></i>Manager (Yönetici) - E-Ticaret Veritabanı Mimarisi:</small>
-            <p class="mb-0 mt-1 small text-muted">"Tabloları oluştururken ilişkisel bütünlüğe dikkat edelim. Görevi sana atadım, kolay gelsin."</p>
-            <small class="text-black-50" style="font-size: 0.75rem;">10 dakika önce</small>
+            <small class="fw-bold" style="color: #dd0031;"><i class="bi bi-person-badge me-1"></i>Sistem Mesajı:</small>
+            <p class="mb-0 mt-1 small text-muted">Arayüz ve veri bağlantıları başarıyla sağlandı. Ekip yorumları veritabanından çekilmeye hazır.</p>
           </div>
-
-          <!-- Tester Yorumu Örneği -->
-          <div class="border-bottom pb-3 mb-3">
-            <small class="fw-bold" style="color: #b800c4;"><i class="bi bi-bug me-1"></i>Tester (Ayşe) - Login API Hatası:</small>
-            <p class="mb-0 mt-1 small text-muted">"Sunucu 500 hatası dönüyor, bağlantıyı kontrol et. Durumu 'Bug' olarak güncelleyip sana geri gönderdim."</p>
-            <small class="text-black-50" style="font-size: 0.75rem;">1 saat önce</small>
-          </div>
-
-          <!-- Developer (Senin) Yorumun Örneği -->
-          <div class="pb-1">
-            <small class="fw-bold text-success"><i class="bi bi-code-slash me-1"></i>Sen (Developer) - Proje Alpha V1:</small>
-            <p class="mb-0 mt-1 small text-muted">"Gerekli güncellemeleri tamamladım. Durumu 'In Progress'ten 'Ready for Test'e çekiyorum."</p>
-            <small class="text-black-50" style="font-size: 0.75rem;">2 saat önce</small>
-          </div>
-
         </div>
       </div>
     </div>
   </div>
-  <!-- 4. ALT İSTATİSTİKLER (Developer Performansı) -->
+
+  <!-- İstatistikler -->
   <div class="row g-3 mt-2">
     <div class="col-md-6">
       <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #dd0031 !important;">
         <small class="text-muted fw-bold">Üzerimdeki Toplam Görev</small>
-        <h4 class="fw-bold mb-0 text-dark">12</h4> 
+        <h4 class="fw-bold mb-0 text-dark">{{ toplamGorev }}</h4> 
       </div>
     </div>
     <div class="col-md-6">
       <div class="card border-0 shadow-sm rounded-3 p-3 text-center border-start border-4 bg-white" style="border-color: #b800c4 !important;">
         <small class="text-muted fw-bold">Tamamlanan Görevlerim</small>
-        <h4 class="fw-bold mb-0 text-success">8</h4>
+        <h4 class="fw-bold mb-0 text-success">{{ tamamlananGorev }}</h4>
       </div>
     </div>
   </div>

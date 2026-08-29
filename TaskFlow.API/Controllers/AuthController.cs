@@ -69,7 +69,7 @@ namespace TaskFlow.API.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, user.Role) // Manager, Developer veya Tester rolü
+                    new Claim(ClaimTypes.Role, user.Role) // Sistem bunu [Authorize(Roles="Manager")] ile eşleştirebilir
                 }),
                 Expires = DateTime.UtcNow.AddDays(30), // Rahat çalışman için ömrünü 30 gün yaptık
                 Issuer = _configuration["Jwt:Issuer"],     // appsettings'ten okundu
