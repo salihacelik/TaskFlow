@@ -35,7 +35,7 @@ export class Login {
 
         // 3. Yetkiye göre sayfalara otomatik yönlendirme
         if (yetki === 'Manager') {
-          this.router.navigate(['/manager']);
+          this.router.navigate(['/manager-dashboard']);
         } 
         else if (yetki === 'Developer') {
           this.router.navigate(['/developer']);

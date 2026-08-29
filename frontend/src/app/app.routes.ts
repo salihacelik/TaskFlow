@@ -9,16 +9,16 @@ export const routes: Routes = [
   },    
   { 
     path: 'register', 
-    loadComponent: () => import('./auth/register/register').then((m: any) => m.RegisterComponent ) 
+    loadComponent: () => import('./auth/register/register').then(m => m.RegisterComponent ) 
   },
 
   // 2. YETKİYE GÖRE YÖNLENDİRME KAVŞAĞI
   
-  // Manager (Yönetici) Rotası
+  // Manager (Yönetici) Rotası - ASIL DOSYAYA BAĞLANDI
   { 
-    path: 'manager', 
-    loadComponent: () => import('./manager/manager-dashboard/manager-dashboard').then(m => m.ManagerDashboardComponent)
-  },
+    path: 'manager-dashboard', 
+    loadComponent: () => import('./manager/manager-dashboard/manager-dashboard').then(m => m.ManagerComponent)
+  },      
 
   // Developer (Geliştirici) Rotası
   { 
